@@ -18,25 +18,25 @@ class Game:
 	
 	def _dirToCoord(self, dir):
 		if dir == 'N':
-			return Coord(self.currMove.coord.x, self.currMove.coord.y - 2)
+			return Coord(self.currMove.coord.x, self.currMove.coord.y - 3)
 		elif dir == 'NE':
-			return Coord(self.currMove.coord.x + 1, self.currMove.coord.y - 1)
+			return Coord(self.currMove.coord.x + 2, self.currMove.coord.y - 2)
 		elif dir == 'E':
-			return Coord(self.currMove.coord.x + 2, self.currMove.coord.y)
+			return Coord(self.currMove.coord.x + 3, self.currMove.coord.y)
 		elif dir == 'SE':
-			return Coord(self.currMove.coord.x + 1, self.currMove.coord.y + 1)
+			return Coord(self.currMove.coord.x + 2, self.currMove.coord.y + 2)
 		elif dir == 'S':
-			return Coord(self.currMove.coord.x, self.currMove.coord.y + 2)
+			return Coord(self.currMove.coord.x, self.currMove.coord.y + 3)
 		elif dir == 'SW':
-			return Coord(self.currMove.coord.x - 1, self.currMove.coord.y + 1)
+			return Coord(self.currMove.coord.x - 2, self.currMove.coord.y + 2)
 		elif dir == 'W':
-			return Coord(self.currMove.coord.x - 2, self.currMove.coord.y)
+			return Coord(self.currMove.coord.x - 3, self.currMove.coord.y)
 		elif dir == 'NW':
-			return Coord(self.currMove.coord.x - 1, self.currMove.coord.y - 1)
+			return Coord(self.currMove.coord.x - 2, self.currMove.coord.y - 2)
 
 	def _evalNextMove(self, dir):
 		nextCoord = self._dirToCoord(dir)
-		if nextCoord.x in range(self.cols) or nextCoord.y in range(self.rows):
+		if nextCoord.x in range(self.cols) and nextCoord.y in range(self.rows):
 			if self.matrix[nextCoord.x][nextCoord.y] is None:
 				return 'V'
 			else:
@@ -69,9 +69,16 @@ class Game:
 			self.currMove = nextMove
 			self.matrix[nextMove.coord.x][nextMove.coord.y] = nextMove.num
 			nextMove = self._nextMove()
-		
-		# DEBUG
-		print self.matrix
+	
+	def printBoard(self):
+		for row in range(self.rows):
+			for col in range(self.cols):
+				if self.matrix[row][col] is not None:
+					print ' {n:<3} '.format(n = self.matrix[row][col]),
+				else:
+					print ' --- ',
+			print
 
 game = Game(5, 5)
 game.solve()
+game.printBoard()
