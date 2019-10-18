@@ -10,11 +10,12 @@ class Move:
 		self.nextMoves = {'N': '', 'NE': '', 'E': '', 'SE': '', 'S': '', 'SW': '', 'W': '', 'NW': ''}
 	
 class Game:
-	def __init__(self, rows, cols):
-		self.rows, self.cols = rows, cols
-		self.matrix = [[None for x in range(self.cols)] for y in range(self.rows)]
+	def __init__(self, dim):
+		self.dim = dim
+		self.matrix = [[None for x in range(self.dim)] for y in range(self.dim)]
 		self.currMove = None
 		self.moves = []
+		self.step = 0
 	
 	def _dirToCoord(self, dir):
 		if dir == 'N':
@@ -36,7 +37,7 @@ class Game:
 
 	def _evalNextMove(self, dir):
 		nextCoord = self._dirToCoord(dir)
-		if nextCoord.x in range(self.cols) and nextCoord.y in range(self.rows):
+		if nextCoord.x in range(self.dim) and nextCoord.y in range(self.dim):
 			if self.matrix[nextCoord.x][nextCoord.y] is None:
 				return 'V'
 			else:
@@ -57,28 +58,50 @@ class Game:
 				nextDir = di[0]
 				break
 		if nextDir:
+			self.currMove.nextMoves[nextDir] = 'P'
 			nextCoord = self._dirToCoord(nextDir)
 			return Move(nextCoord.x, nextCoord.y, self.currMove.num + 1)
 		else:
 			return None
 
-	def solve(self):
-		nextMove = Move(0, 0, 1)
-		while nextMove is not None:
-			self.moves.append(nextMove)
-			self.currMove = nextMove
-			self.matrix[nextMove.coord.x][nextMove.coord.y] = nextMove.num
+	def solve(self, move):
+		if move is not None:
+			self.moves.append(move)
+			self.currMove = move
+			self.matrix[move.coord.x][move.coord.y] = move.num
+			print str(self.currMove.num),
 			nextMove = self._nextMove()
+			while nextMove is None:
+				self.matrix[self.currMove.coord.x][self.currMove.coord.y] = None
+				self.moves.pop()
+				if len(self.moves) > 0:
+					self.currMove = self.moves[-1]
+					print str(self.currMove.num),
+					for d in self.currMove.nextMoves:
+						if self.currMove.nextMoves[d] == 'P':
+							self.currMove.nextMoves[d] = 'F'
+							break
+					nextMove = self._nextMove()
+				else:
+					self.step += 1
+					if self.step < self.dim ** 2:
+						nextMove = Move(self.step // self.dim, self.step % self.dim, 1)
+					else:
+						print
+						return
+			self.solve(nextMove)
 	
 	def printBoard(self):
-		for row in range(self.rows):
-			for col in range(self.cols):
+		for row in range(self.dim):
+			print '-----' * self.dim
+			for col in range(self.dim):
 				if self.matrix[row][col] is not None:
-					print ' {n:<3} '.format(n = self.matrix[row][col]),
+					print ' {n:<3}'.format(n = self.matrix[row][col]),
 				else:
-					print ' --- ',
+					print ' ---',
 			print
+		print '-----' * self.dim
 
-game = Game(5, 5)
-game.solve()
+game = Game(5)
+game.solve(Move(0, 0, 1))
 game.printBoard()
