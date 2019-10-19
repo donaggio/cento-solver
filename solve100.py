@@ -65,18 +65,20 @@ class Game:
 			return None
 
 	def solve(self, move):
-		if move is not None:
+		while move is not None:
 			self.moves.append(move)
 			self.currMove = move
 			self.matrix[move.coord.x][move.coord.y] = move.num
-			print str(self.currMove.num),
+			# DEBUG
+			# print str(self.currMove.num),
 			nextMove = self._nextMove()
 			while nextMove is None:
 				self.matrix[self.currMove.coord.x][self.currMove.coord.y] = None
 				self.moves.pop()
 				if len(self.moves) > 0:
 					self.currMove = self.moves[-1]
-					print str(self.currMove.num),
+					# DEBUG
+					# print str(self.currMove.num),
 					for d in self.currMove.nextMoves:
 						if self.currMove.nextMoves[d] == 'P':
 							self.currMove.nextMoves[d] = 'F'
@@ -86,10 +88,14 @@ class Game:
 					self.step += 1
 					if self.step < self.dim ** 2:
 						nextMove = Move(self.step // self.dim, self.step % self.dim, 1)
+						# DEBUG
+						print
+						print 'Step ' + str(self.step) + ' (' + str(nextMove.coord.x) + ',' + str(nextMove.coord.y) + '):'
+						print
 					else:
 						print
 						return
-			self.solve(nextMove)
+			move = nextMove
 	
 	def printBoard(self):
 		for row in range(self.dim):
