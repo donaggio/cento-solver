@@ -64,50 +64,59 @@ class Game:
 		else:
 			return None
 
+	def _printProgress(self):
+		print ('\rStep ' + str(self.step) + ': [{0:<' + str(self.dim ** 2) + '}]').format('#' * self.currMove.num),
+
 	def solve(self, move):
 		while move is not None:
 			self.moves.append(move)
 			self.currMove = move
 			self.matrix[move.coord.x][move.coord.y] = move.num
-			# DEBUG
-			# print str(self.currMove.num),
+			self._printProgress()
+			if move.num == self.dim ** 2:
+				return
 			nextMove = self._nextMove()
 			while nextMove is None:
 				self.matrix[self.currMove.coord.x][self.currMove.coord.y] = None
 				self.moves.pop()
 				if len(self.moves) > 0:
 					self.currMove = self.moves[-1]
-					# DEBUG
-					# print str(self.currMove.num),
+					self._printProgress()
 					for d in self.currMove.nextMoves:
 						if self.currMove.nextMoves[d] == 'P':
 							self.currMove.nextMoves[d] = 'F'
 							break
 					nextMove = self._nextMove()
 				else:
+					self.currMove = None
 					self.step += 1
 					if self.step < self.dim ** 2:
 						nextMove = Move(self.step // self.dim, self.step % self.dim, 1)
-						# DEBUG
-						print
-						print 'Step ' + str(self.step) + ' (' + str(nextMove.coord.x) + ',' + str(nextMove.coord.y) + '):'
-						print
 					else:
 						print
 						return
 			move = nextMove
+		return
 	
 	def printBoard(self):
+		maxNumWidth = len(str(self.dim ** 2))
+		cellWidth = maxNumWidth + 2
+		rowDiv = '+' + ('-' * ((cellWidth + 1 ) * self.dim - 1)) + '+'
+
 		for row in range(self.dim):
-			print '-----' * self.dim
+			print rowDiv
+			print '|',
 			for col in range(self.dim):
 				if self.matrix[row][col] is not None:
-					print ' {n:<3}'.format(n = self.matrix[row][col]),
+					print ('{n:<' + str(maxNumWidth) + '} |').format(n = self.matrix[row][col]),
 				else:
-					print ' ---',
+					print '-' * maxNumWidth + ' |',
 			print
-		print '-----' * self.dim
+		print rowDiv
 
-game = Game(5)
-game.solve(Move(0, 0, 1))
-game.printBoard()
+if __name__ == "__main__":
+	game = Game(6)
+	game.solve(Move(0, 0, 1))
+	print '\n'
+	game.printBoard()
+	print '\n'
