@@ -22,6 +22,7 @@ class Game:
 		self.board = [[None for x in range(self.dim)] for y in range(self.dim)]
 		self.currMove = None
 		self.moves = []
+		self.maxNum = 0
 		self.step = 0
 	
 	def _dirToCoord(self, dir):
@@ -71,7 +72,7 @@ class Game:
 			return None
 
 	def _printProgress(self):
-		print ('\rStep ' + str(self.step) + ': [{0:<' + str(self.dim ** 2) + '}]').format('#' * self.currMove.num),
+		print ('\rStep ' + str(self.step) + ': [{0:<' + str(self.dim ** 2) + '}] Max. ' + str(self.maxNum)).format('#' * self.currMove.num),
 
 	def solve(self):
 		# Start at top-left corner
@@ -81,6 +82,8 @@ class Game:
 			self.moves.append(move)
 			self.currMove = move
 			self.board[move.coord.y][move.coord.x] = move.num
+			if self.maxNum < move.num:
+				self.maxNum = move.num
 			# Print progress indicator
 			self._printProgress()
 			# Have we finished?
